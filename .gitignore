@@ -1,0 +1,13 @@
+# Virtual environments
+venv/
+.venv/
+env/
+
+# VS Code settings and workspace history
+.vscode/
+.history/
+
+# Python artifacts
+__pycache__/
+*.pyc
+
