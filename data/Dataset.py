@@ -36,3 +36,17 @@ dataset = [
     {"text": "Hey", "label": "greeting"},
     {"text": "Como va todo?", "label": "greeting"}
 ]
+
+label2id = {"work_assignment": 0,
+            "date": 1,
+            "conflict": 2,
+            "priority" : 3,
+            "greeting": 4}
+            
+id2label = {0 :"work_assignment",
+            1 :"date",
+            2 :"conflict",
+            3 :"priority",
+            4 :"greeting",
+}
+            
