@@ -4,7 +4,6 @@ def load_model(device, model_name, label2id, id2label ):
     
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     
-
     model =  AutoModelForSequenceClassification.from_pretrained(
     model_name,
     num_labels=len(label2id),
