@@ -8,11 +8,10 @@ warnings.filterwarnings("ignore")
 cuda_available = torch.cuda.is_available()
 print(f"CUDA available: {cuda_available}")
 
-
 device = torch.device("cuda" if cuda_available else "cpu")
 print(f"Using: {device}")
 
-model_name = "distilbert-base-multilingual-cased"  
+model_name = "saved_model"  
 
 model, tokenizer = load_model(device, model_name, label2id, id2label)
 

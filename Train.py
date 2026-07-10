@@ -44,3 +44,6 @@ for epoch in range(epochs):
     loss.backward()
     optimizer.step()
     print(f"Epoch {epoch + 1}, Loss; {loss.item()}")
+
+model.save_pretrained("saved_model")
+tokenizer.save_pretrained("saved_model")
