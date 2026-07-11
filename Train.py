@@ -3,6 +3,7 @@ import torch
 from transformers import AutoTokenizer
 from src.model import load_model
 from torch.optim import AdamW
+from torch.utils.data import DataLoader, TensorDataset
 
 
 labels = []
@@ -33,17 +34,28 @@ encoding = tokenizer(
 
 labels_tensor = torch.tensor(labels).to(device)
 
+dataset_tensor = TensorDataset(
+    encoding["input_ids"],
+    encoding["attention_mask"],
+    labels_tensor
+)
+loader = DataLoader(dataset_tensor, batch_size = 4, shuffle = True)
+
 optimizer = AdamW(model.parameters(), lr=2e-5)
 epochs = 10
 
 for epoch in range(epochs):
     model.train()
-    optimizer.zero_grad()
-    output = model(**encoding, labels=labels_tensor)
-    loss = output.loss
-    loss.backward()
-    optimizer.step()
-    print(f"Epoch {epoch + 1}, Loss; {loss.item()}")
+    total_loss = 0
+    for input_ids, attention_mask, batch_labels in loader:
+        optimizer.zero_grad()
+        output = model(input_ids=input_ids, attention_mask=attention_mask, labels= batch_labels)
+        loss = output.loss
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+    avg_loss = total_loss / len(loader)
+    print(f"Epoch {epoch + 1}, Loss; {avg_loss}")
 
 model.save_pretrained("saved_model")
 tokenizer.save_pretrained("saved_model")
