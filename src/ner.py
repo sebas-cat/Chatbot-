@@ -19,7 +19,7 @@ def extract_dates(text):
     return matches + matches2
 
 def analyze(text):
-    entities = extract_entities(text),
-    dates = extract_dates(text),
+    entities = extract_entities(text)
+    dates = extract_dates(text)
     results = {"entities": entities, "dates": dates}
     return results
