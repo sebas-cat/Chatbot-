@@ -4,6 +4,7 @@ from data.Dataset import label2id, id2label
 import warnings
 from src.model import load_model
 warnings.filterwarnings("ignore")  
+from src.ner import analyze
 
 cuda_available = torch.cuda.is_available()
 print(f"CUDA available: {cuda_available}")
@@ -38,3 +39,5 @@ while True:
         predicted_id = torch.argmax(logits).item()
         intent = id2label[predicted_id]
         print(intent)
+        result = analyze(user_input)
+        print(result)
