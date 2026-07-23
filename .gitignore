@@ -12,3 +12,4 @@ __pycache__/
 *.pyc
 
 saved_model/
+Credentials.json
