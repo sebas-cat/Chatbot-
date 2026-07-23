@@ -27,13 +27,18 @@ def create_event(service, summary, description, start_time, end_time):
         'description': description,
         'start': {
             'dateTime': start_time,
-            'timeZone': 'UTC',
+            'timeZone': 'America/Costa_Rica',
         },
         'end': {
             'dateTime': end_time,
-            'timeZone': 'UTC',
+            'timeZone': 'America/Costa_Rica',
         },
     }
     event = service.events().insert(calendarId='primary', body=event).execute()
     print(f"Event created: {event.get('htmlLink')}")
     return event
+
+def get_events(service, max_results=10):
+    events_result = service.events().list(calendarId='primary', maxResults=max_results, singleEvents=True, orderBy='startTime').execute()
+    events = events_result.get('items', [])
+    return events

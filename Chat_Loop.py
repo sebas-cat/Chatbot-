@@ -5,6 +5,7 @@ import warnings
 from src.model import load_model
 warnings.filterwarnings("ignore")  
 from src.ner import analyze
+from src.calendar_api import create_event, authenticate_google_calendar 
 
 cuda_available = torch.cuda.is_available()
 print(f"CUDA available: {cuda_available}")
@@ -17,7 +18,7 @@ model_name = "saved_model"
 model, tokenizer = load_model(device, model_name, label2id, id2label)
 
 print("PlaseholderChatBotname, Say Bye to quit.\n", flush=True)
-
+service = authenticate_google_calendar()
 while True:
     user_input = input("Me: ")
     if user_input == "":
