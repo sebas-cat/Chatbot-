@@ -4,8 +4,8 @@ from data.Dataset import label2id, id2label
 import warnings
 from src.model import load_model
 warnings.filterwarnings("ignore")  
-from src.ner import analyze
-from src.calendar_api import create_event, authenticate_google_calendar 
+from src.ner import analyze, resolve_date 
+from src.calendar_api import create_event, authenticate_google_calendar
 
 cuda_available = torch.cuda.is_available()
 print(f"CUDA available: {cuda_available}")
@@ -42,3 +42,25 @@ while True:
         print(intent)
         result = analyze(user_input)
         print(result)
+    if intent == "work_assignment" and result["dates"]:
+        date = result["dates"][0]
+        if "/" not in date:
+            date = resolve_date(date)
+
+        if result["time"]:
+            raw_time = result["time"][0].replace("am", "").replace("pm", "").strip()
+            if ":" not in raw_time:
+                raw_time = f"{raw_time}:00"
+            start_time = f"{date}T{raw_time}:00"
+            end_time = f"{date}T{int(raw_time.split(':')[0])+1:02d}:{raw_time.split(':')[1]}:00"
+        else:
+            start_time = f"{date}T10:00:00"
+            end_time = f"{date}T11:00:00"
+
+        create_event(
+            service,
+            summary=user_input,
+            description=user_input,
+            start_time=start_time,
+            end_time=end_time
+    )
