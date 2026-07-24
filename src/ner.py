@@ -1,5 +1,6 @@
 import spacy
 import re
+import datetime
 
 nlp = spacy.load("es_core_news_sm")
 
@@ -21,5 +22,27 @@ def extract_dates(text):
 def analyze(text):
     entities = extract_entities(text)
     dates = extract_dates(text)
-    results = {"entities": entities, "dates": dates}
+    time = extract_time(text)
+    results = {"entities": entities, "dates": dates, "time": time}
     return results
+
+days_of_the_week = {"lunes": 0,
+            "martes": 1,
+            "miércoles": 2,
+            "jueves": 3,
+            "viernes": 4,
+            "sábado": 5,
+            "domingo": 6}
+def resolve_date(day_name):
+    target = days_of_the_week[day_name]
+    today = datetime.date.today()
+    days_ahead = (target - today.weekday()) % 7
+    if days_ahead == 0:
+        days_ahead = 7
+    result = today + datetime.timedelta(days=days_ahead)
+    return result.strftime("%Y-%m-%d")
+
+def extract_time(text):
+    Tpattern = r"\b\d{1,2}(?::\d{2})?\s?(?:am|pm)?\b"
+    Tmatches = re.findall(Tpattern, text)
+    return Tmatches
