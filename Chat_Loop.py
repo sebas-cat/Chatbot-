@@ -6,6 +6,7 @@ from src.model import load_model
 warnings.filterwarnings("ignore")  
 from src.ner import analyze, resolve_date 
 from src.calendar_api import create_event, authenticate_google_calendar
+from src.database import init_database, save_event
 
 cuda_available = torch.cuda.is_available()
 print(f"CUDA available: {cuda_available}")
@@ -16,7 +17,7 @@ print(f"Using: {device}")
 model_name = "saved_model"  
 
 model, tokenizer = load_model(device, model_name, label2id, id2label)
-
+init_database()
 print("PlaseholderChatBotname, Say Bye to quit.\n", flush=True)
 service = authenticate_google_calendar()
 while True:
@@ -48,9 +49,16 @@ while True:
             date = resolve_date(date)
 
         if result["time"]:
+            is_pm = "pm" in result["time"][0]
             raw_time = result["time"][0].replace("am", "").replace("pm", "").strip()
             if ":" not in raw_time:
                 raw_time = f"{raw_time}:00"
+            hour = int(raw_time.split(":")[0])
+            if is_pm and hour != 12:
+                hour += 12
+            elif not is_pm and hour == 12:
+                hour = 0
+            raw_time = f"{hour:02d}:{raw_time.split(':')[1]}"
             start_time = f"{date}T{raw_time}:00"
             end_time = f"{date}T{int(raw_time.split(':')[0])+1:02d}:{raw_time.split(':')[1]}:00"
         else:
@@ -63,4 +71,7 @@ while True:
             description=user_input,
             start_time=start_time,
             end_time=end_time
-    )
+            )
+        save_event(user_input, intent, date, start_time)
+    
+        
