@@ -7,6 +7,8 @@ warnings.filterwarnings("ignore")
 from src.ner import analyze, resolve_date 
 from src.calendar_api import create_event, authenticate_google_calendar
 from src.database import init_database, save_event
+from src.llm import generate_response
+
 
 cuda_available = torch.cuda.is_available()
 print(f"CUDA available: {cuda_available}")
@@ -40,9 +42,13 @@ while True:
         logits = output.logits
         predicted_id = torch.argmax(logits).item()
         intent = id2label[predicted_id]
-        print(intent)
         result = analyze(user_input)
-        print(result)
+        context = {
+                    "dates": result["dates"],
+                    "time": result["time"],
+                    "entities": result["entities"]
+        }
+       
     if intent == "work_assignment" and result["dates"]:
         date = result["dates"][0]
         if "/" not in date:
@@ -64,7 +70,7 @@ while True:
         else:
             start_time = f"{date}T10:00:00"
             end_time = f"{date}T11:00:00"
-
+    
         create_event(
             service,
             summary=user_input,
@@ -73,5 +79,8 @@ while True:
             end_time=end_time
             )
         save_event(user_input, intent, date, start_time)
+    generated_response = generate_response(user_input, intent, context)
+    print(f"Bot: {generated_response}")
+        
     
         
