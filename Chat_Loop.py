@@ -6,7 +6,7 @@ from src.model import load_model
 warnings.filterwarnings("ignore")  
 from src.ner import analyze, resolve_date, extract_task
 from src.calendar_api import create_event, authenticate_google_calendar
-from src.database import init_database, save_event
+from src.database import get_events_date, init_database, save_event
 from src.llm import generate_response
 
 
@@ -50,6 +50,7 @@ while True:
         }
     task = extract_task(user_input, result["dates"], result["time"])
     if intent == "work_assignment" and result["dates"]:
+        
         date = result["dates"][0]
         if "/" not in date:
             date = resolve_date(date)
@@ -70,6 +71,7 @@ while True:
         else:
             start_time = f"{date}T10:00:00"
             end_time = f"{date}T11:00:00"
+        
         create_event(
                 service,
                 summary=task,
@@ -78,7 +80,15 @@ while True:
                 end_time=end_time
                 )
         save_event(user_input, intent, date, start_time)
+        
+    elif intent == "date" and result["dates"]:
+        date = result["dates"][0]
+        if "/" not in date:
+            date = resolve_date(date)
+        events = get_events_date(date)
+        context["events"] = events
     generated_response = generate_response(user_input, intent, context)
     print(f"Bot: {generated_response}")
+        
             
         
