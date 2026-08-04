@@ -46,3 +46,13 @@ def extract_time(text):
     Tpattern = r"\b\d{1,2}(?::\d{2})?\s?(?:am|pm)?\b"
     Tmatches = re.findall(Tpattern, text)
     return Tmatches
+
+def extract_task(text, dates, time):
+    for date in dates:
+        text = text.replace(date, "")      
+    for t in time:
+        text = text.replace(t, "") 
+    filler_and_verbs = ["tengo tarea de","Anota que tengo que entregar","Recordarme","Agrega","Crear recordatorio para","necesito entregar","necesito programar","ayúdame a organizar", "a las","el", "la", "los", "las","que", "para", "con", "hola", "antes de medianoche", "mañana", "hoy", "en la tarde", "de", "del", "debe", "debo", "lo primero que debo terminar hoy es", "pon la entrega de", "marca la lectura obligatoria de","a s","s"," a s"]
+    for verb in filler_and_verbs:
+        text = re.sub(r'\b' + re.escape(verb) + r'\b', '', text, flags=re.IGNORECASE)
+    return text.strip()
