@@ -87,6 +87,12 @@ while True:
             date = resolve_date(date)
         events = get_events_date(date)
         context["events"] = events
+    elif intent == "conflict" and result["dates"]:
+        conflict = result["dates"][0]
+        if "/" not in conflict:
+            conflict = resolve_date(conflict)
+        events = get_events_date(conflict)
+        context["conflict_detected"] = len(events) > 1
     generated_response = generate_response(user_input, intent, context)
     print(f"Bot: {generated_response}")
         
