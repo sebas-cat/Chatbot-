@@ -13,7 +13,7 @@ def extract_entities(text):
 
 
 def extract_dates(text):
-    pattern = (r"lunes|martes|miércoles|jueves|viernes|sábado|domingo")
+    pattern = (r"lunes|martes|miércoles|jueves|viernes|sábado|domingo|mañana|hoy")
     pattern2 = (r"\d{1,2}\/\d{1,2}\/\d{2,4}")
     matches = re.findall(pattern, text)
     matches2 = re.findall(pattern2, text)
@@ -34,6 +34,10 @@ days_of_the_week = {"lunes": 0,
             "sábado": 5,
             "domingo": 6}
 def resolve_date(day_name):
+    if day_name == "hoy":
+        return datetime.date.today().strftime("%Y-%m-%d")
+    if day_name == "mañana":
+        return (datetime.date.today() + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
     target = days_of_the_week[day_name]
     today = datetime.date.today()
     days_ahead = (target - today.weekday()) % 7
