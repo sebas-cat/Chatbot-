@@ -21,4 +21,12 @@ def save_event(summary, intent, date, time):
             VALUES (?,?,?,?)""", (summary, intent, date, time))
     conn.commit()
     conn.close()
-        
+    
+def get_events_date(date):
+    conn = sqlite3.connect('events.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM events WHERE date = ?" , (date,))
+    results = cursor.fetchall()
+    conn.close()
+    return results
+    
