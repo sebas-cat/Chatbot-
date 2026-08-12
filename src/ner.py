@@ -14,7 +14,7 @@ def extract_entities(text):
 
 def extract_dates(text):
     pattern = (r"lunes|martes|miércoles|jueves|viernes|sábado|domingo|mañana|hoy")
-    pattern2 = (r"\d{1,2}\/\d{1,2}\/\d{2,4}")
+    pattern2 = (r"\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}")
     matches = re.findall(pattern, text)
     matches2 = re.findall(pattern2, text)
     return matches + matches2
@@ -47,7 +47,7 @@ def resolve_date(day_name):
     return result.strftime("%Y-%m-%d")
 
 def extract_time(text):
-    Tpattern = r"\b\d{1,2}(?::\d{2})?\s?(?:am|pm)?\b"
+    Tpattern = r"\b\d{1,2}(?::\d{2})?\s?(?:am|pm)\b|\b\d{1,2}:\d{2}\b"
     Tmatches = re.findall(Tpattern, text)
     return Tmatches
 
