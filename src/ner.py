@@ -54,9 +54,9 @@ def extract_time(text):
 def extract_task(text, dates, time):
     for date in dates:
         text = text.replace(date, "")      
-    for t in time:
-        text = text.replace(t, "") 
-    filler_and_verbs = ["tengo tarea de","Anota que tengo que entregar","Recordarme","Agrega","Crear recordatorio para","necesito entregar","necesito programar","ayúdame a organizar", "a las","el", "la", "los", "las","que", "para", "con", "hola", "antes de medianoche", "mañana", "hoy", "en la tarde", "de", "del", "debe", "debo", "lo primero que debo terminar hoy es", "pon la entrega de", "marca la lectura obligatoria de","a s","s"," a s"]
+    for t in time:        text = text.replace(t, "") 
+    filler_and_verbs = ["tengo tarea de","Anota que tengo que entregar","Recordarme","Agrega","Crear recordatorio para","necesito entregar","necesito programar","ayúdame a organizar", "a las","el", "la", "los", "las","que", "para", "con", "hola", "antes de medianoche", "mañana", "hoy", "en la tarde", "de", "del", "debe", "debo", "lo primero que debo terminar hoy es", "pon la entrega de", "marca la lectura obligatoria de","Creame un evento de","Creame un evento","tengo una tarea de","tengo una tarea","una tarea de","crealo tu","hazlo tú","agrégalo tú","a", "s","s"," a s"]
+
     for verb in filler_and_verbs:
         text = re.sub(r'\b' + re.escape(verb) + r'\b', '', text, flags=re.IGNORECASE)
     return text.strip()
