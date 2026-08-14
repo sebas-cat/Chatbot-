@@ -42,7 +42,7 @@ dataset_tensor = TensorDataset(
 loader = DataLoader(dataset_tensor, batch_size = 4, shuffle = True)
 
 optimizer = AdamW(model.parameters(), lr=2e-5)
-epochs = 10
+epochs = 20
 
 for epoch in range(epochs):
     model.train()

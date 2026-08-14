@@ -26,6 +26,8 @@ def initialize():
 model, tokenizer, service, device = initialize()
 if "messages" not in st.session_state:
     st.session_state.messages = []
+if "last_task_context" not in st.session_state:
+    st.session_state.last_task_context = None
 
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
@@ -50,6 +52,7 @@ if user_input:
 
     intent = id2label[predicted_id]
     result = analyze(user_input)
+    print(f"Intent: {intent}, Dates: {result['dates']}")
     context = {
         "dates": result["dates"],
         "time": result["time"],
@@ -65,7 +68,7 @@ if user_input:
             separator = "/" if "/" in date else "-"
             parts = date.split(separator)
             date = f"{parts[2]}-{parts[0].zfill(2)}-{parts[1].zfill(2)}"
-
+            
         if result["time"]:
             is_pm = "pm" in result["time"][0]
             raw_time = result["time"][0].replace(
@@ -83,7 +86,7 @@ if user_input:
         else:
             start_time = f"{date}T10:00:00"
             end_time = f"{date}T11:00:00"
-
+            #print(f"summary: {task}, start: {start_time}, end: {end_time}")
         create_event(
             service,
             summary=task,
@@ -92,7 +95,12 @@ if user_input:
             end_time=end_time
         )
         save_event(user_input, intent, date, start_time)
-
+        st.session_state.last_task_context = {
+                            "task": task,
+                            "date": date,
+                            "start_time": start_time,
+                            "end_time": end_time
+        }
     elif intent == "date" and result["dates"]:
         date = result["dates"][0]
         if "/" not in date and "-" not in date:
@@ -110,6 +118,18 @@ if user_input:
             conflict = resolve_date(conflict)
         events = get_events_date(conflict)
         context["conflict_detected"] = len(events) > 1
+    elif intent == "confirmation" and st.session_state.last_task_context:
+        ctx = st.session_state.last_task_context
+        create_event(
+            service,
+            summary=ctx["task"],
+            description=ctx["task"],
+            start_time=ctx["start_time"],
+            end_time=ctx["end_time"]
+        )
+        save_event(ctx["task"], intent, ctx["date"], ctx["start_time"])
+        st.session_state.last_task_context = None
+  
 
     generated_response = generate_response(
         user_input, intent, context, st.session_state.messages)
@@ -118,4 +138,4 @@ if user_input:
         st.markdown(generated_response)
     st.session_state.messages.append({"role": "assistant", "content": generated_response})
 
-    
+    print(f"Context saved: {st.session_state.last_task_context}")
